@@ -3,6 +3,7 @@
 (echo -e '\n\n'; tail +4 $0) | g++ -g -std=c++17 -Wall -Werror -x c++ - && exec ./a.out
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -11,12 +12,6 @@
 
 using namespace std;
 using namespace std::chrono;
-
-struct bracket
-{
-  char open;
-  char close;
-};
 
 void parse_file(fstream& file, vector<string>& lines)
 {
