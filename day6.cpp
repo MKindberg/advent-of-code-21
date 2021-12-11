@@ -1,7 +1,3 @@
-#!/bin/bash
-# This c++ file behaves like a script and running it with ./ will both compile and run
-(echo -e '\n\n'; tail +4 $0) | g++ -std=c++17 -Wall -Werror -O3 -x c++ - && exec time -p ./a.out
-
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -13,7 +9,7 @@
 
 using namespace std;
 
-void parse_file(FILE* file, vector<int>& numbers)
+static void parse_file(FILE* file, vector<int>& numbers)
 {
   int n;
   while(fscanf(file, "%d,", &n) != EOF) {
@@ -21,7 +17,7 @@ void parse_file(FILE* file, vector<int>& numbers)
   }
 }
 
-long breed(const vector<int>& fish_start, int days) {
+static long breed(const vector<int>& fish_start, int days) {
     array<long,9> fish = {0};
 
     for(int f : fish_start)
@@ -36,24 +32,25 @@ long breed(const vector<int>& fish_start, int days) {
     }
 
     return accumulate(begin(fish), end(fish), 0l);
-
 }
 
-int main()
+bool day6(long& p1, long& p2)
 {
-  FILE* file = fopen("input", "r");
+  FILE* file = fopen("input/6", "r");
   if(file != NULL) {
     vector<int> fish_start;
 
     parse_file(file, fish_start);
 
-    cout << "Part 1: " << breed(fish_start, 80) << endl;
-    cout << "Part 2: " << breed(fish_start, 256) << endl;
+    p1 = breed(fish_start, 80);
+    p2 = breed(fish_start, 256);
 
     fclose(file);
 
   } else {
     cout << "Couldn't open file" << endl;
+    return false;
   }
+  return true;
 }
 

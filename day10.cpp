@@ -1,19 +1,13 @@
-#!/bin/bash
-# This c++ file behaves like a script and running it with ./ will both compile and run
-(echo -e '\n\n'; tail +4 $0) | g++ -g -std=c++17 -Wall -Werror -x c++ - && exec ./a.out
-
 #include <algorithm>
 #include <array>
-#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <stack>
 #include <vector>
 
 using namespace std;
-using namespace std::chrono;
 
-void parse_file(fstream& file, vector<string>& lines)
+static void parse_file(fstream& file, vector<string>& lines)
 {
   string line;
   while(getline(file, line)) {
@@ -21,7 +15,7 @@ void parse_file(fstream& file, vector<string>& lines)
   }
 }
 
-int get_score2(char b)
+static int get_score2(char b)
 {
   switch(b) {
     case ')':
@@ -35,7 +29,8 @@ int get_score2(char b)
   }
   return 0;
 }
-int get_score(char b)
+
+static int get_score(char b)
 {
   switch(b) {
     case ')':
@@ -50,7 +45,7 @@ int get_score(char b)
   return 0;
 }
 
-bool calc_score(string line, long& invalid, long& incomplete)
+static bool calc_score(string line, long& invalid, long& incomplete)
 {
   invalid = 0;
   incomplete = 0;
@@ -85,17 +80,15 @@ bool calc_score(string line, long& invalid, long& incomplete)
   return true;
 }
 
-int main()
+bool day10(long& p1, long& p2)
 {
   fstream file;
-  file.open("input", ios::in);
+  file.open("input/10", ios::in);
   if(file.is_open()) {
     vector<string> lines;
 
     parse_file(file, lines);
     file.close();
-
-    auto start = high_resolution_clock::now();
 
     long invalid_score = 0;
     vector<long> incomplete_scores;
@@ -109,15 +102,14 @@ int main()
 
     int mid =  incomplete_scores.size()/2;
     nth_element(incomplete_scores.begin(), incomplete_scores.begin() + mid, incomplete_scores.end());
-    cout << invalid_score << endl;;
-    cout << incomplete_scores[mid] << endl;
 
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-    cout << duration.count() << "µs" << endl;
+    p1 = invalid_score;
+    p2 = incomplete_scores[mid];
 
   } else {
     cout << "Couldn't open file" << endl;
+    return false;
   }
+  return true;
 }
 

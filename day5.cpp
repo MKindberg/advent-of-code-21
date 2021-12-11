@@ -1,7 +1,3 @@
-#!/bin/bash
-# This c++ file behaves like a script and running it with ./ will both compile and run
-(echo -e '\n\n'; tail +4 $0) | g++ -std=c++17 -Wall -Werror -O3 -x c++ - && exec time -p ./a.out
-
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -12,7 +8,7 @@
 
 using namespace std;
 
-void parse_file(FILE* file, vector<pair<int,int>>& from, vector<pair<int,int>>& to)
+static void parse_file(FILE* file, vector<pair<int,int>>& from, vector<pair<int,int>>& to)
 {
   int fromX, fromY, toX, toY;
   while(fscanf(file, "%d,%d -> %d,%d", &fromX, &fromY, &toX, &toY) != EOF) {
@@ -21,7 +17,7 @@ void parse_file(FILE* file, vector<pair<int,int>>& from, vector<pair<int,int>>& 
   }
 }
 
-void init_map(const vector<pair<int,int>>& from, const vector<pair<int,int>>& to, vector<vector<int>>& map)
+static void init_map(const vector<pair<int,int>>& from, const vector<pair<int,int>>& to, vector<vector<int>>& map)
 {
   int maxX = max(
     (*max_element(from.begin(), from.end(), [](auto a, auto b){return a.first < b.first;})).first,
@@ -37,7 +33,7 @@ void init_map(const vector<pair<int,int>>& from, const vector<pair<int,int>>& to
   }
 }
 
-void fill_map1(const vector<pair<int,int>>& from, const vector<pair<int,int>>& to, vector<vector<int>>& map) {
+static void fill_map1(const vector<pair<int,int>>& from, const vector<pair<int,int>>& to, vector<vector<int>>& map) {
   for(size_t i = 0; i < from.size(); ++i) {
     if(from[i].first == to[i].first || from[i].second == to[i].second) {
       int diffX = to[i].first - from[i].first;
@@ -54,7 +50,7 @@ void fill_map1(const vector<pair<int,int>>& from, const vector<pair<int,int>>& t
   }
 }
 
-void fill_map2(const vector<pair<int,int>>& from, const vector<pair<int,int>>& to, vector<vector<int>>& map) {
+static void fill_map2(const vector<pair<int,int>>& from, const vector<pair<int,int>>& to, vector<vector<int>>& map) {
   for(size_t i = 0; i < from.size(); ++i) {
     int diffX = to[i].first - from[i].first;
     int diffY = to[i].second - from[i].second;
@@ -69,7 +65,7 @@ void fill_map2(const vector<pair<int,int>>& from, const vector<pair<int,int>>& t
   }
 }
 
-int count_crossings(vector<vector<int>> map)
+static int count_crossings(vector<vector<int>> map)
 {
   return transform_reduce(
     map.begin(),
@@ -80,9 +76,9 @@ int count_crossings(vector<vector<int>> map)
   );
 }
 
-int main()
+bool day5(long& p1, long& p2)
 {
-  FILE* file = fopen("input", "r");
+  FILE* file = fopen("input/5", "r");
   if(file != NULL) {
     vector<pair<int,int>> from, to;
     vector<vector<int>> map1, map2;
@@ -94,14 +90,15 @@ int main()
     map2 = map1;
 
     fill_map1(from, to, map1);
-    fill_map2(from, to, map2);
+    p1 = count_crossings(map1);
 
-    cout << "Part 1: " << count_crossings(map1) << endl;
-    cout << "Part 2: " << count_crossings(map2) << endl;
+    fill_map2(from, to, map2);
+    p2 = count_crossings(map2);
 
     fclose(file);
-
   } else {
     cout << "Couldn't open file" << endl;
+    return false;
   }
+  return true;
 }

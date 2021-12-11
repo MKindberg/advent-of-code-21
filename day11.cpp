@@ -1,44 +1,39 @@
-#!/bin/bash
-# This c++ file behaves like a script and running it with ./ will both compile and run
-(echo -e '\n\n'; tail +4 $0) | g++ -g -std=c++17 -Wall -Werror -x c++ - && exec ./a.out
-
 #include <algorithm>
-#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <stack>
 #include <vector>
 #include <stdio.h>
+#include <cassert>
 
 using namespace std;
-using namespace std::chrono;
 
 using matrix = vector<vector<int>>;
 
-void parse_file(FILE* file, matrix& map)
+static void parse_file(FILE* file, matrix& map)
 {
   string line;
   vector<int> row;
   for(unsigned i = 0; i < 10; ++i) {
     char c;
     for(unsigned j = 0; j < 10; ++j) {
-      fscanf(file, "%c", &c);
+      assert(fscanf(file, "%c", &c) == 1);
       row.push_back(c-'0');
     }
-    fscanf(file, "%c", &c);
+    assert(fscanf(file, "%c", &c) == 1);
     map.push_back(row);
     row.clear();
   }
 }
 
-int get(const matrix& map, int x, int y)
+static int get(const matrix& map, int x, int y)
 {
   if(x < 0 || y < 0 || (unsigned) x >= map.size() || (unsigned) y >= map[0].size())
     return -1;
   return map[x][y];
 }
 
-int light_one(matrix& map, int x, int y)
+static int light_one(matrix& map, int x, int y)
 {
   int count = 1;
   map[x][y] = -1;
@@ -54,7 +49,7 @@ int light_one(matrix& map, int x, int y)
   return count;
 }
 
-bool add_one(matrix& map, int& count)
+static bool add_one(matrix& map, int& count)
 {
   for(unsigned i = 0; i < map.size(); ++i) {
     for(unsigned j = 0; j < map[i].size(); ++j) {
@@ -80,14 +75,13 @@ bool add_one(matrix& map, int& count)
   return simultaneously;
 }
 
-int main()
+bool day11(long& p1, long& p2)
 {
   FILE* file;
-  file = fopen("input", "r");
+  file = fopen("input/11", "r");
   if(file != NULL) {
     matrix map;
 
-    auto start = high_resolution_clock::now();
     parse_file(file, map);
     fclose(file);
 
@@ -95,17 +89,15 @@ int main()
     unsigned i = 1;
     while(!add_one(map, count)) {
       if(i == 100)
-        cout << count << endl;
+        p1 = count;
       ++i;
     }
-    cout << i << endl;
-
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-    cout << duration.count() << "µs" << endl;
+    p2 = i;
 
   } else {
     cout << "Couldn't open file" << endl;
+    return false;
   }
+  return true;
 }
 

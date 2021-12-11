@@ -1,7 +1,3 @@
-#!/bin/bash
-# This c++ file behaves like a script and running it with ./ will both compile and run
-(echo -e '\n\n'; tail +4 $0) | g++ -std=c++17 -Wall -Werror -O3 -x c++ - && exec time -p ./a.out
-
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -14,7 +10,7 @@
 
 using namespace std;
 
-void parse_file(FILE* file, vector<int>& numbers)
+static void parse_file(FILE* file, vector<int>& numbers)
 {
   int n;
   while(fscanf(file, "%d,", &n) != EOF) {
@@ -22,7 +18,7 @@ void parse_file(FILE* file, vector<int>& numbers)
   }
 }
 
-int sum_fuel1(vector<int>& crabs, int pos)
+static int sum_fuel1(vector<int>& crabs, int pos)
 {
   return transform_reduce(
     crabs.begin(),
@@ -32,7 +28,8 @@ int sum_fuel1(vector<int>& crabs, int pos)
     [pos](int c){return abs(pos-c);}
   );
 }
-int sum_fuel2(vector<int>& crabs, int pos)
+
+static int sum_fuel2(vector<int>& crabs, int pos)
 {
   return transform_reduce(
     crabs.begin(),
@@ -49,7 +46,7 @@ int sum_fuel2(vector<int>& crabs, int pos)
   );
 }
 
-int part1(vector<int>& crabs)
+static int part1(vector<int>& crabs)
 {
   int last = INT_MAX;
   int current = INT_MAX-1;
@@ -60,27 +57,29 @@ int part1(vector<int>& crabs)
   return last;
 }
 
-int part2(vector<int>& crabs)
+static int part2(vector<int>& crabs)
 {
   int mean = reduce(crabs.begin(), crabs.end()) / crabs.size();
   return min(min(sum_fuel2(crabs, mean-1), sum_fuel2(crabs, mean)), sum_fuel2(crabs, mean+1));
 }
 
-int main()
+bool day7(long& p1, long& p2)
 {
-  FILE* file = fopen("input", "r");
+  FILE* file = fopen("input/7", "r");
   if(file != NULL) {
     vector<int> crabs;
 
     parse_file(file, crabs);
 
-    cout<< part1(crabs) << endl;
-    cout<< part2(crabs) << endl;
+    p1 = part1(crabs);
+    p2 = part2(crabs);
 
     fclose(file);
 
   } else {
     cout << "Couldn't open file" << endl;
+    return false;
   }
+  return true;
 }
 

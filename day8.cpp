@@ -1,7 +1,3 @@
-#!/bin/bash
-# This c++ file behaves like a script and running it with ./ will both compile and run
-(echo -e '\n\n'; tail +4 $0) | g++ -g -std=c++17 -Wall -Werror -x c++ - && exec time -p ./a.out
-
 #include <array>
 #include <cstdio>
 #include <functional>
@@ -19,7 +15,7 @@ struct number
   string pattern;
 };
 
-int part1(const vector<vector<string>>& outputs)
+static int part1(const vector<vector<string>>& outputs)
 {
   int count = 0;
   for(auto o : outputs) {
@@ -33,7 +29,7 @@ int part1(const vector<vector<string>>& outputs)
   return count;
 }
 
-void parse_file(FILE* file, vector<vector<string>>& patterns, vector<vector<string>>& outputs)
+static void parse_file(FILE* file, vector<vector<string>>& patterns, vector<vector<string>>& outputs)
 {
   char buf[10];
   int n = 0;
@@ -64,7 +60,7 @@ void parse_file(FILE* file, vector<vector<string>>& patterns, vector<vector<stri
   outputs.push_back(o);
 }
 
-bool expect_missing(string a, string b, int m)
+static bool expect_missing(string a, string b, int m)
 {
   int missing = 0;
   for(char c : b)
@@ -73,7 +69,7 @@ bool expect_missing(string a, string b, int m)
   return missing == m;
 }
 
-int indexOf(array<number,10> numbers, string s)
+static int indexOf(array<number,10> numbers, string s)
 {
   for(size_t i = 0; i < numbers.size(); ++i) {
     if(numbers[i].pattern == s)
@@ -82,7 +78,7 @@ int indexOf(array<number,10> numbers, string s)
   return -1;
 }
 
-void init_numbers(array<number,10>& n)
+static void init_numbers(array<number,10>& n)
 {
   n = {{
     {6, {7, 9}, [](array<number,10> n, string s){return expect_missing(s, n[7].pattern, 0);}, ""},
@@ -98,7 +94,7 @@ void init_numbers(array<number,10>& n)
   }};
 }
 
-bool matches_number(const array<number,10>& numbers, const string pattern, int n) {
+static bool matches_number(const array<number,10>& numbers, const string pattern, int n) {
   if(pattern.length() != numbers[n].length)
     return false;
   for(int p : numbers[n].prereq)
@@ -107,7 +103,7 @@ bool matches_number(const array<number,10>& numbers, const string pattern, int n
   return numbers[n].verif(numbers, pattern);
 }
 
-int part2(vector<vector<string>>& patterns, vector<vector<string>>& outputs)
+static int part2(vector<vector<string>>& patterns, vector<vector<string>>& outputs)
 {
   int sum = 0;
   array<number,10> numbers;
@@ -135,22 +131,24 @@ int part2(vector<vector<string>>& patterns, vector<vector<string>>& outputs)
   return sum;
 }
 
-int main()
+bool day8(long& p1, long& p2)
 {
-  FILE* file = fopen("input", "r");
+  FILE* file = fopen("input/8", "r");
   if(file != NULL) {
     vector<vector<string>> patterns;
     vector<vector<string>> outputs;
 
     parse_file(file, patterns, outputs);
 
-    cout << part1(outputs) << endl;
-    cout << part2(patterns, outputs) << endl;
+    p1 = part1(outputs);
+    p2 = part2(patterns, outputs);
 
     fclose(file);
 
   } else {
     cout << "Couldn't open file" << endl;
+    return false;
   }
+  return true;
 }
 

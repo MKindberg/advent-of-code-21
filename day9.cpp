@@ -1,16 +1,13 @@
-#!/bin/bash
-# This c++ file behaves like a script and running it with ./ will both compile and run
-(echo -e '\n\n'; tail +4 $0) | g++ -g -std=c++17 -Wall -Werror -x c++ - && exec time -p ./a.out
-
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <numeric>
 #include <vector>
+#include <array>
 
 using namespace std;
 
-int count_adj(vector<string>& map, int x, int y)
+static int count_adj(vector<string>& map, int x, int y)
 {
   map[x][y] = '9';
   int count = 1;
@@ -24,12 +21,13 @@ int count_adj(vector<string>& map, int x, int y)
     count += count_adj(map, x, y-1);
   return count;
 }
-int basin_size(vector<string> map, int x, int y)
+
+static int basin_size(vector<string> map, int x, int y)
 {
   return count_adj(map, x, y);
 }
 
-void parse_file(fstream& file, vector<string>& map)
+static void parse_file(fstream& file, vector<string>& map)
 {
   string line;
   while(getline(file, line)) {
@@ -43,10 +41,10 @@ void parse_file(fstream& file, vector<string>& map)
   map.push_back(line);
 }
 
-int main()
+bool day9(long& p1, long& p2)
 {
   fstream file;
-  file.open("input", ios::in);
+  file.open("input/9", ios::in);
   if(file.is_open()) {
     vector<string> map;
 
@@ -67,13 +65,15 @@ int main()
     }
     partial_sort(sizes.begin(), sizes.begin() + 3, sizes.end(), std::greater<int>());
 
-    cout << risk_sum << endl;
-    cout << accumulate(sizes.begin(), sizes.begin()+3, 1, multiplies<int>()) << endl;
+    p1 = risk_sum;
+    p2 = accumulate(sizes.begin(), sizes.begin()+3, 1, multiplies<int>());
 
     file.close();
 
   } else {
     cout << "Couldn't open file" << endl;
+    return false;
   }
+  return true;
 }
 

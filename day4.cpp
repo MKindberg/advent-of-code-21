@@ -1,7 +1,3 @@
-#!/bin/bash
-# This c++ file behaves like a script and running it with ./ will both compile and run
-(echo -e '\n\n'; tail +4 $0) | g++ -std=c++17 -Wall -Werror -O3 -x c++ - && exec time -p ./a.out
-
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -75,7 +71,7 @@ class Board {
   }
 };
 
-void parse_file(fstream& file, vector<int>& numbers, vector<Board>& boards)
+static void parse_file(fstream& file, vector<int>& numbers, vector<Board>& boards)
 {
   string line;
   vector<string> data;
@@ -97,7 +93,7 @@ void parse_file(fstream& file, vector<int>& numbers, vector<Board>& boards)
   }
 }
 
-void play(const vector<int>& numbers, vector<Board>& boards)
+static void play(const vector<int>& numbers, vector<Board>& boards, long& first, long& last)
 {
   bool first_win = true;
   for(int number : numbers) {
@@ -105,10 +101,10 @@ void play(const vector<int>& numbers, vector<Board>& boards)
       int score = boards[i].mark(number);
       if(score != -1) {
         if(first_win) {
-          cout << "First win scores " << score << endl;
+          first = score;
           first_win = false;
         } else if(boards.size() == 1) {
-          cout << "Last win scores " << score << endl;
+          last = score;
         }
         boards.erase(begin(boards) + i);
         --i;
@@ -117,19 +113,21 @@ void play(const vector<int>& numbers, vector<Board>& boards)
   }
 }
 
-int main()
+bool day4(long& p1, long& p2)
 {
   fstream file;
-  file.open("input", ios::in);
+  file.open("input/4", ios::in);
   if(file.is_open()) {
     vector<int> numbers;
     vector<Board> boards;
 
     parse_file(file, numbers, boards);
 
-    play(numbers, boards);
+    play(numbers, boards, p1, p2);
 
   } else {
     cout << "Couldn't open file" << endl;
+    return false;
   }
+  return true;
 }

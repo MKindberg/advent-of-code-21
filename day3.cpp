@@ -1,7 +1,3 @@
-#!/bin/bash
-# This c++ file behaves like a script and running it with ./ will both compile and run
-(echo -e '\n\n'; tail +4 $0) | g++ -std=c++17 -Wall -Werror -O3 -x c++ - && exec time -p ./a.out
-
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -12,12 +8,12 @@
 
 using namespace std;
 
-unsigned flip_bits(unsigned n, unsigned l)
+static unsigned flip_bits(unsigned n, unsigned l)
 {
   return ~n & ((1 << l) - 1);
 }
 
-char most_common(const vector<string>& numbers, int bit)
+static char most_common(const vector<string>& numbers, int bit)
 {
   int count = 0;
   for(unsigned i = 0; i < numbers.size(); ++i)
@@ -29,17 +25,8 @@ char most_common(const vector<string>& numbers, int bit)
     return '1';
   return '0';
 }
-void remove_non_matching(vector<string>& numbers, int index, int value)
-{
-  for(unsigned i = 0; i < numbers.size(); ++i) {
-    if(numbers[i][index] != value + '0'){
-      numbers.erase(numbers.begin() + i);
-      --i;
-    }
-  }
-}
 
-void part1(const vector<string>& numbers)
+static int part1(const vector<string>& numbers)
 {
   int size = numbers[0].length();
   string n = "";
@@ -48,10 +35,10 @@ void part1(const vector<string>& numbers)
   unsigned gamma = stoi(n, nullptr, 2);
   unsigned epsilon = flip_bits(gamma, size);
 
-  cout << "Part 1: "<< gamma * epsilon << endl;
+  return gamma * epsilon;
 }
 
-void part2(const vector<string>& numbers)
+static int part2(const vector<string>& numbers)
 {
   int size = numbers[0].length();
 
@@ -76,13 +63,13 @@ void part2(const vector<string>& numbers)
   assert(oxygen.size() == 1);
   assert(co2.size() == 1);
 
-  cout << "Part 2: " << stoi(oxygen[0], nullptr, 2) * stoi(co2[0], nullptr, 2) << endl;
+  return stoi(oxygen[0], nullptr, 2) * stoi(co2[0], nullptr, 2);
 }
 
-int main()
+bool day3(long& p1, long& p2)
 {
   fstream file;
-  file.open("input.txt", ios::in);
+  file.open("input/3", ios::in);
   if(file.is_open()) {
     string line;
     vector<string> numbers;
@@ -90,11 +77,13 @@ int main()
       numbers.push_back(line);
     }
 
-    part1(numbers);
+    p1 = part1(numbers);
 
-    part2(numbers);
+    p2 = part2(numbers);
 
   } else {
     cout << "Couldn't open file";
+    return false;
   }
+  return true;
 }

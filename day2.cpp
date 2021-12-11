@@ -4,10 +4,10 @@
 
 using namespace std;
 
-int main()
+bool day2(long& part1, long& part2)
 {
   fstream file;
-  file.open("input.txt", ios::in);
+  file.open("input/2", ios::in);
   if(file.is_open()) {
     string line;
     int depth1 = 0;
@@ -28,10 +28,12 @@ int main()
         aim -= stoi(line.substr(i+1, line.length()));
       }
     }
-    cout << depth1*horizontal << endl;
-    cout << depth2*horizontal << endl;
 
+    part1 = depth1*horizontal;
+    part2 = depth2*horizontal;
   } else {
     cout << "Couldn't open file";
+    return false;
   }
+  return true;
 }
