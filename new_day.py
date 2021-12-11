@@ -36,6 +36,17 @@ bool day{day}(long& p1, long& p2)
   }}
   return true;
 }}
+
+#ifdef MAIN
+int main()
+{{
+  long p1, p2;
+  day{day}(p1, p2);
+  cout << p1 << endl;
+  cout << p2 << endl;
+  return 0;
+}}
+#endif
 """
 days = [int(f.split('.')[0][3:]) for f in os.listdir('.') if f[0:3] == "day" and f[-4:] == ".cpp"]
 new_day = max(days) + 1

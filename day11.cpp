@@ -101,3 +101,13 @@ bool day11(long& p1, long& p2)
   return true;
 }
 
+#ifdef MAIN
+int main()
+{
+  long p1, p2;
+  day11(p1, p2);
+  cout << p1 << endl;
+  cout << p2 << endl;
+  return 0;
+}
+#endif
