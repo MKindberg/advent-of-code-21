@@ -11,3 +11,7 @@ main.cpp: generate_main.py
 	./generate_main.py
 
 main: $(PROGS)
+
+.PHONY: new
+new:
+	./new_day.py
