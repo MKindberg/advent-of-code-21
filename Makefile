@@ -16,16 +16,17 @@ obj/%.o: %.cpp
 	@mkdir -p obj
 	$(CXX) $(CXXFLAGS) -O3 -c $< -o $@
 
-main.cpp: generate_main.py
+main.cpp: generate_main.py $(OBJS)
 	./generate_main.py
 
 
 .PHONY: new run clean
 new:
 	./new_day.py
+	make clean && bear make main
 
 run: main
 	./main
 
 clean:
-	rm -rf $(OBJS)
+	rm -f $(OBJS) main main.cpp

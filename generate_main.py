@@ -23,16 +23,18 @@ int main()
   int i = 1;
   size_t total_time = 0;
   printf("%s\\t%15s\\t%15s\\t\\t%s\\n", "Day", "Part 1", "Part 2", "Time");
+  const int runs = 50;
   for(auto d : days){{
     auto start = high_resolution_clock::now();
-    if(!d(p1, p2)){{
-      cout << "Day " << i << " failed!" << endl;
-    }}
+    for(int i = 0; i < runs; ++i)
+      if(!d(p1, p2)){{
+        cout << "Day " << i << " failed!" << endl;
+      }}
     auto stop = high_resolution_clock::now();
 
     auto duration = duration_cast<microseconds>(stop - start);
-    total_time += duration.count();
-    printf("%u\\t%15ld\\t%15ld\\t\\t%lu\\n", i, p1, p2, duration.count());
+    total_time += duration.count()/runs;
+    printf("%u\\t%15ld\\t%15ld\\t\\t%lu\\n", i, p1, p2, duration.count()/runs);
     ++i;
   }}
   cout << "Total time: " << total_time << "µs" << endl;
