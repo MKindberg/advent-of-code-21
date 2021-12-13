@@ -20,30 +20,30 @@ static void parse_file(FILE* file, vector<pair<int,int>>& dots, vector<pair<char
   }
 }
 
-static void fill_paper(vector<vector<bool>>& paper, const vector<pair<int,int>>& dots, int maxX, int maxY) {
+static void fill_paper(vector<vector<short>>& paper, const vector<pair<int,int>>& dots, int maxX, int maxY) {
   for(int i = 0; i < maxY; ++i) {
-    vector<bool> v(maxX, false);
+    vector<short> v(maxX, 0);
     paper.push_back(v);
   }
 
   for(pair<int,int> p : dots) {
-    paper[p.first][p.second] = true;
+    paper[p.first][p.second] = 1;
   }
 }
 
-static void fold(vector<vector<bool>>& paper, char axis, int foldv)
+static void fold(vector<vector<short>>& paper, char axis, int foldv)
 {
   if(axis == 'y') {
     for(unsigned x = 0; x < paper[0].size(); ++x) {
       for(int i = 1; i < foldv+1; ++i) {
-        paper[foldv-i][x] = paper[foldv-i][x] || paper[foldv+i][x];
+        paper[foldv-i][x] |= paper[foldv+i][x];
       }
     }
     paper.resize(foldv);
   } else {
     for(unsigned y = 0; y < paper.size(); ++y) {
       for(int i = 1; i < foldv+1; ++i) {
-        paper[y][foldv-i] = paper[y][foldv-i] || paper[y][foldv+i];
+        paper[y][foldv-i] |= paper[y][foldv+i];
       }
       paper[y].resize(foldv);
     }
@@ -58,7 +58,7 @@ bool day13(long& p1, long& p2)
     vector<pair<int,int>> dots;
     vector<pair<char,int>> folds;
 
-    vector<vector<bool>> paper;
+    vector<vector<short>> paper;
 
     parse_file(file, dots, folds);
     fclose(file);
@@ -72,7 +72,7 @@ bool day13(long& p1, long& p2)
     fold(paper, folds[0].first, folds[0].second);
     for_each(paper.cbegin(), paper.cend(),
       [&p1](auto v){
-        p1 += count(v.cbegin(), v.cend(), true);
+        p1 += count(v.cbegin(), v.cend(), 1);
       }
     );
     for_each(folds.cbegin()+1, folds.cend(),
@@ -83,7 +83,7 @@ bool day13(long& p1, long& p2)
 #ifdef MAIN
     for(auto v : paper) {
       for(auto e : v)
-        if(e)
+        if(e == 1)
           cout << '#';
         else
           cout << '.';

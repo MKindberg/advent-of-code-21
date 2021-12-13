@@ -51,7 +51,7 @@ static pair<long,long> find_path(const paths& map, bool twice, vector<string> fo
 
   for(const string& s : map.at(start)) {
     bool t = twice;
-    bool f = find(forbidden.begin(), forbidden.end(), s) == forbidden.end();
+    bool f = find(forbidden.cbegin(), forbidden.cend(), s) == forbidden.cend();
     if(twice || f) {
       t &= f;
       pair<long,long> p = find_path(map, t, forbidden, s);
