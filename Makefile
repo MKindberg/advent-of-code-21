@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Werror
+CXXFLAGS = -std=c++2a -Wall -Werror
 
 SRCS = $(wildcard day*.cpp)
 OBJS = $(patsubst %.cpp,obj/%.o,$(SRCS))
