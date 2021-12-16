@@ -1,4 +1,3 @@
-
 #include <cassert>
 #include <algorithm>
 #include <fstream>
@@ -36,23 +35,27 @@ static void parse_file(fstream& file, matrix& map)
     map.push_back(values);
   }
 }
-pair<int,int> visit_next(const matrix &paths, vector<vector<bool>>& visited) {
+
+pair<int,int> visit_next(const matrix &paths, vector<vector<bool>>& visited, vector<pair<int,int>>& seen) {
   pair<int,int> min_p = {-1, -1};
   long min_v = INT_MAX;
-  for(int i = 0; i < paths.size(); ++i) {
-    for(int j = 0; j < paths[0].size(); ++j) {
-      if(!visited[i][j] && min_v >= paths[i][j]) {
-        min_v = paths[i][j];
-        min_p = {i, j};
-      }
-      if(paths[i][j] == INT_MAX)
-        break;
+  for(unsigned i = 0; i < seen.size(); ++i) {
+    auto[y,x] = seen[i];
+    if(visited[y][x]) {
+      seen.erase(seen.begin()+i);
+      --i;
+      continue;
+    }
+    if(min_v >= paths[y][x]) {
+      min_v = paths[y][x];
+      min_p.first = y;
+      min_p.second = x;
     }
   }
   return min_p;
 }
 
-static void fill_adj(const matrix& map, matrix &paths, vector<vector<bool>>& visited, unsigned y, unsigned x)
+static void fill_adj(const matrix& map, matrix &paths, vector<vector<bool>>& visited, vector<pair<int,int>>& seen, unsigned y, unsigned x)
 {
   visited[y][x] = true;
   unsigned height = map.size();
@@ -62,25 +65,27 @@ static void fill_adj(const matrix& map, matrix &paths, vector<vector<bool>>& vis
     return;
   }
 
-  vector<tuple<int,int,long>> dirs;
+  vector<tuple<int,int>> dirs;
   if(x < width - 1 && !visited[y][x+1])
-    dirs.push_back({0,1,0});
+    dirs.push_back({0,1});
   if(y < height - 1 && !visited[y+1][x])
-    dirs.push_back({1,0,0});
+    dirs.push_back({1,0});
   if(x > 0 && !visited[y][x-1])
-    dirs.push_back({0,-1,0});
+    dirs.push_back({0,-1});
   if(y > 0 && !visited[y-1][x])
-    dirs.push_back({-1,0,0});
+    dirs.push_back({-1,0});
   for(auto& d : dirs){
     paths[y+get<0>(d)][x+get<1>(d)] = min(paths[y+get<0>(d)][x+get<1>(d)], paths[y][x] + map[y+get<0>(d)][x+get<1>(d)]);
+    seen.push_back({y+get<0>(d), x+get<1>(d)});
   }
 }
 
 static void fill_paths(const matrix& map, matrix &paths, vector<vector<bool>>& visited, unsigned y, unsigned x) {
-  auto[yy, xx] = visit_next(paths, visited);
+  vector<pair<int,int>> seen = {{0, 0}};
+  auto[yy, xx] = visit_next(paths, visited, seen);
   while(yy != -1) {
-    fill_adj(map, paths, visited, yy, xx);
-    tie(yy, xx) = visit_next(paths, visited);
+    fill_adj(map, paths, visited, seen, yy, xx);
+    tie(yy, xx) = visit_next(paths, visited, seen);
   }
 
 }
